@@ -20,9 +20,10 @@
     TERMS.
  */
 
-#include "oledC.h"
-#include "../mcc.h"
-#include "../pin_manager.h"
+#define FCY 16000000L
+#include <libpic30.h>
+#include "mcc_generated_files/mcc.h"
+#include "OLEDC.h"
 
 
 enum STREAMING_MODES {
@@ -69,9 +70,9 @@ uint16_t exchangeTwoBytes(uint8_t byte1, uint8_t byte2){
     if(!spi_master_open(oledC)){
         return;
     };
-    byte1 = spi1_exchangeByte(byte1);
-    byte2 = spi1_exchangeByte(byte2);
-    spi1_close();
+    byte1 = spi2_exchangeByte(byte1);
+    byte2 = spi2_exchangeByte(byte2);
+    spi2_close();
     return ((uint16_t)byte1) << 8 | byte2;
 }
 
@@ -79,16 +80,16 @@ void sendCommand(OLEDC_COMMAND cmd, uint8_t *payload, uint8_t payload_size){
     if(!spi_master_open(oledC)){
         return;
     };
-    oledC_nCS_LAT = 0;
-    oledC_DC_LAT = 0;
-    spi1_exchangeByte(cmd);
+    oledC_nCS_SetLow();
+    oledC_DC_SetLow();
+    spi2_exchangeByte(cmd);
     if(payload_size > 0){
-        oledC_DC_LAT = 1;
-        spi1_writeBlock(payload, payload_size);
-        oledC_DC_LAT = 0;
+        oledC_DC_SetHigh();
+        spi2_writeBlock(payload, payload_size);
+        oledC_DC_SetLow();
     }
-    oledC_nCS_LAT = 1;
-    spi1_close();
+    oledC_nCS_SetHigh();
+    spi2_close();
     startStreamingIfNeeded(cmd);
 }
 
@@ -97,7 +98,7 @@ void oledC_setRowAddressBounds(uint8_t min, uint8_t max){
     payload[0] = min > 95 ? 95 : min;
     payload[1] = max > 95 ? 95 : max;
     sendCommand(OLEDC_CMD_SET_ROW_ADDRESS, payload, 2);
-    
+
 }
 void oledC_setColumnAddressBounds(uint8_t min, uint8_t max){
     min = min > 95 ? 95 : min;
@@ -113,9 +114,9 @@ void oledC_setSleepMode(bool on){
 }
 
 void oledC_startReadingDisplay(void){
-    sendCommand(OLEDC_CMD_READ_RAM, NULL, 0);    
-    oledC_nCS_LAT = 0;
-    oledC_DC_LAT = 1;
+    sendCommand(OLEDC_CMD_READ_RAM, NULL, 0);
+    oledC_nCS_SetLow();
+    oledC_DC_SetHigh();
 }
 void oledC_stopReadingDisplay(void){
     oledC_stopWritingDisplay();
@@ -132,13 +133,13 @@ uint16_t oledC_readColor(void){
 }
 
 void oledC_startWritingDisplay(void){
-    sendCommand(OLEDC_CMD_WRITE_RAM, NULL, 0);    
-    oledC_nCS_LAT = 0;
-    oledC_DC_LAT = 1;
+    sendCommand(OLEDC_CMD_WRITE_RAM, NULL, 0);
+    oledC_nCS_SetLow();
+    oledC_DC_SetHigh();
 }
 void oledC_stopWritingDisplay(void){
-    oledC_nCS_LAT = 1;
-    oledC_DC_LAT = 0;
+    oledC_nCS_SetHigh();
+    oledC_DC_SetLow();
     stopStreaming();
 }
 void oledC_sendColor(uint8_t r, uint8_t g, uint8_t b){
@@ -153,19 +154,19 @@ void oledC_sendColorInt(uint16_t raw){
     }
     exchangeTwoBytes(raw >> 8, raw & 0x00FF);
 }
-void oledC_setup(void){
-    oledC_EN_LAT = 0;
-    oledC_RST_LAT = 1;
-    oledC_RW_LAT = 0;
+void OLEDC_init(void){
+    oledC_EN_SetLow();
+    oledC_RST_SetHigh();
+    oledC_RW_SetLow();
     __delay_ms(1);
-    oledC_RST_LAT = 0;
+    oledC_RST_SetLow();
     __delay_us(2);
-    oledC_RST_LAT = 1;
-    oledC_EN_LAT = 1;
+    oledC_RST_SetHigh();
+    oledC_EN_SetHigh();
     __delay_ms(1);
     oledC_setSleepMode(false);
     __delay_ms(200);
-    
+
     oledC_setColumnAddressBounds(0, 95);
     oledC_setRowAddressBounds(0, 95);
 }

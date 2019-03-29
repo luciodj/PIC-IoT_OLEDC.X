@@ -72,7 +72,7 @@ void oledC_startReadingDisplay(void);
 void oledC_stopReadingDisplay(void);
 uint16_t oledC_readColor(void);
 
-void oledC_setup(void);
+void OLEDC_init(void);
 void oledC_sendColor(uint8_t r, uint8_t g, uint8_t b);
 void oledC_sendColorInt(uint16_t raw);
 void oledC_startWritingDisplay(void);

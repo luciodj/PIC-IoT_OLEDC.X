@@ -51,7 +51,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "tmr1.h"
-#include "oledCDrivers/oledC.h"
 #include "spi1_driver.h"
 #include "uart1.h"
 #include "drivers/spi_master.h"

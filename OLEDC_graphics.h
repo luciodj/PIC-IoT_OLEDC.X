@@ -20,9 +20,37 @@
     TERMS.
  */
 
-#ifndef OLED_C_EXAMPLE_H
-#define	OLED_C_EXAMPLE_H
+#ifndef OLEDC_SHAPES_H
+#define	OLEDC_SHAPES_H
 
-void oledC_example(void);
 
-#endif
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+
+#define OLED_DIM_WIDTH      95
+#define OLED_DIM_HEIGHT     95
+#define OLED_FONT_WIDTH     5
+#define OLED_FONT_HEIGHT    8
+
+void OLED_setScale(uint8_t _sx, uint8_t _sy);
+
+void OLED_setColor(uint16_t c);
+
+void OLED_clearScreen(void);
+
+void OLED_setBackground(uint16_t color);
+
+
+void OLED_circle(uint8_t center_x, uint8_t center_y, uint8_t radius);
+void OLED_ring(uint8_t center_x, uint8_t center_y, uint8_t radius, uint8_t width);
+void OLED_rectangle(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y);
+void OLED_line(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y, uint8_t width);
+void OLED_point(uint8_t x, uint8_t y);
+void OLED_thickPoint(uint8_t center_x, uint8_t center_y, uint8_t width);
+void OLED_putc(uint8_t x, uint8_t y,uint8_t ch);
+void OLED_puts(uint8_t x, uint8_t y, uint8_t *string);
+void OLED_drawBitmap(uint8_t x, uint8_t y, uint8_t *bit_array, uint8_t len);
+
+#endif	/* OLEDC_SHAPES_H */

@@ -46,7 +46,6 @@
 #include "clock.h"
 #include "system.h"
 #include "tmr1.h"
-#include "oledCDrivers/oledC.h"
 #include "spi1_driver.h"
 #include "uart1.h"
 #include "drivers/spi_master.h"
@@ -69,7 +68,6 @@ void SYSTEM_Initialize(void)
     UART1_Initialize();
     ADC1_Initialize();
     timeout_initialize();
-    oledC_setup();
     TMR2_Initialize();
     TMR1_Initialize();
 }

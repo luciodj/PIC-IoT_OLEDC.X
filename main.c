@@ -45,21 +45,22 @@
 /**
   Section: Included Files
 */
-#include "mcc_generated_files/system.h"
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
+#include "mcc_generated_files/mcc.h"
 #include "mcc_generated_files/led.h"
 #include "mcc_generated_files/sensors_handling.h"
 #include "mcc_generated_files/cloud/cloud_service.h"
 #include "mcc_generated_files/debug_print.h"
+#include "OLEDC_example.h"
 
 //This handles messages published from the MQTT server when subscribed
 void receivedFromCloud(uint8_t *topic, uint8_t *payload)
 {
     char *toggleToken = "\"toggle\":";
     char *subString;
-    
+
     if ((subString = strstr((char*)payload, toggleToken)))
     {
         LED_holdYellowOn( subString[strlen(toggleToken)] == '1' );
@@ -74,7 +75,7 @@ void receivedFromCloud(uint8_t *topic, uint8_t *payload)
 void sendToCloud(void)
 {
    static char json[70];
-         
+
    // This part runs every CFG_SEND_INTERVAL seconds
    int rawTemperature = SENSORS_getTempValue();
    int light = SENSORS_getLightValue();
@@ -84,6 +85,7 @@ void sendToCloud(void)
       CLOUD_publishData((uint8_t*)json, len);
       LED_flashYellow();
    }
+   OLEDC_example();
 }
 
 #include "mcc_generated_files/application_manager.h"

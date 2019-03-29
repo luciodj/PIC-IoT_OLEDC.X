@@ -20,59 +20,9 @@
     TERMS.
  */
 
-#include "oledC_shapes.h"
-#include "oledCDrivers/oledC.h"
+#include "OLEDC_graphics.h"
+#include "OLEDC.h"
 
-void drawPoint(shape_t *shape);
-void drawCircle(shape_t *shape);
-void drawRing(shape_t *shape);
-void drawRectangle(shape_t *shape);
-void drawLine(shape_t *shape);
-void drawCharacter(shape_t *shape);
-void drawString(shape_t *shape);
-void drawString(shape_t *shape);
-void drawBitmap(shape_t *shape);
-
-
-void oledC_createShape(enum OLEDC_SHAPE shape_type, shape_params_t *params, shape_t *newShape){
-    newShape->_type = shape_type;
-    newShape->active = true;
-    
-    newShape->params.point = params->point;
-    switch(shape_type){
-        case OLED_SHAPE_CIRCLE:
-            newShape->params.circle = params->circle;
-            newShape->draw = drawCircle;
-            break;
-        case OLED_SHAPE_RING:
-            newShape->params.ring = params->ring;
-            newShape->draw = drawRing;
-            break;
-        case OLED_SHAPE_RECTANGLE:
-            newShape->params.rectangle = params->rectangle;
-            newShape->draw = drawRectangle;
-            break;
-        case OLED_SHAPE_LINE:
-            newShape->params.line = params->line;
-            newShape->draw = drawLine;
-            break;
-        case OLED_SHAPE_CHARACTER:
-            newShape->params.character = params->character;
-            newShape->draw = drawCharacter;
-            break;
-        case OLED_SHAPE_STRING:
-            newShape->params.string = params->string;
-            newShape->draw = drawString;
-            break;
-        case OLED_SHAPE_BITMAP:
-            newShape->params.bitmap = params->bitmap;
-            newShape->draw = drawBitmap;
-            break;
-        default: 
-            newShape->draw = drawPoint;
-            break;
-    }
-}
 
 const uint8_t font[] = { // compact 5x8 font
     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x5F,0x00,0x00,0x00,0x07,0x00,0x07,0x00, //	'sp,!,"
@@ -97,7 +47,7 @@ const uint8_t font[] = { // compact 5x8 font
     0x03,0x01,0x7F,0x01,0x03,0x3F,0x40,0x40,0x40,0x3F,0x1F,0x20,0x40,0x20,0x1F, //	'T,U,V
     0x3F,0x40,0x38,0x40,0x3F,0x63,0x14,0x08,0x14,0x63,0x03,0x04,0x78,0x04,0x03, //	'W,X,Y
     0x61,0x59,0x49,0x4D,0x43,                                                   //  'Z
-    0x00,0x7F,0x41,0x41,0x41,0x02,0x04,0x08,0x10,0x20,                          //	'[,\ 
+    0x00,0x7F,0x41,0x41,0x41,0x02,0x04,0x08,0x10,0x20,                          //	'[,backslash
     0x00,0x41,0x41,0x41,0x7F,0x04,0x02,0x01,0x02,0x04,0x40,0x40,0x40,0x40,0x40, //	'],^,_
     0x00,0x03,0x07,0x08,0x00,0x20,0x54,0x54,0x38,0x40,0x7F,0x28,0x44,0x44,0x38, //	'`,a,b
     0x38,0x44,0x44,0x44,0x28,0x38,0x44,0x44,0x28,0x7F,0x38,0x54,0x54,0x54,0x18, //	'c,d,e
@@ -112,18 +62,49 @@ const uint8_t font[] = { // compact 5x8 font
     0x02,0x01,0x02,0x04,0x02                                                    //  '~
     };
 
+uint8_t sx=1, sy=1;
+uint16_t color;
+uint16_t background_color;
+
+void OLED_setScale(uint8_t _sx, uint8_t _sy)
+{
+    sx = _sx;
+    sy = _sy;
+}
+
+void OLED_setColor(uint16_t c)
+{
+    color = c;
+}
+
+void OLED_clearScreen(void) {
+    oledC_setColumnAddressBounds(0,96);
+    oledC_setRowAddressBounds(0,96);
+    uint8_t x, y;
+    for( x = 0; x < 96; x++){
+        for( y = 0; y < 96; y++){
+            oledC_sendColorInt(background_color);
+        }
+    }
+}
+
+void OLED_setBackground(uint16_t color){
+    background_color = color;
+    OLED_clearScreen();
+}
+
 uint8_t coerceAddressAdditionWithinRange(uint8_t base_address, int8_t adder){
     int16_t additionResult = base_address+adder;
     if(additionResult > (int16_t)OLED_DIM_WIDTH){
         return OLED_DIM_WIDTH;
-    } 
+    }
     if(additionResult < (int16_t) 0x00) {
         return 0x00;
     }
     return (uint8_t) (base_address+adder);
 }
 
-void OLED_DrawPoint(uint8_t x, uint8_t y, uint16_t color){
+void OLED_point(uint8_t x, uint8_t y){
     if(x > OLED_DIM_WIDTH || y > OLED_DIM_HEIGHT){
         return;
     }
@@ -131,7 +112,8 @@ void OLED_DrawPoint(uint8_t x, uint8_t y, uint16_t color){
     oledC_setRowAddressBounds(y,95);
     oledC_sendColorInt(color);
 }
-void OLED_DrawThickPoint(uint8_t center_x, uint8_t center_y, uint8_t width, uint16_t color){
+
+void OLED_thickPoint(uint8_t center_x, uint8_t center_y, uint8_t width){
     uint8_t max_x,min_x,max_y, min_y;
     uint8_t x, y, dx, dy;
     if((center_x-width) > OLED_DIM_WIDTH || (center_y-width) > OLED_DIM_HEIGHT){
@@ -142,21 +124,22 @@ void OLED_DrawThickPoint(uint8_t center_x, uint8_t center_y, uint8_t width, uint
     min_x = coerceAddressAdditionWithinRange(center_x, -(width));
     max_y = coerceAddressAdditionWithinRange(center_y, width);
     min_y = coerceAddressAdditionWithinRange(center_y, -(width));
-    
+
     for(x = min_x; x < max_x; x++){
         dx = (center_x >= x) ? (center_x-x) : (x - center_x);
         for(y = min_y; y < max_y; y++){
             dy = (center_y >= y) ? (center_y-y) : (y - center_y);
             if(((dy+dx) <= width)|| (dy*dy+dx*dx) <= (width*width)){
-                OLED_DrawPoint(x, y, color);
+                OLED_point(x, y);
             }
         }
     }
 }
-void OLED_DrawCircle(uint8_t x0, uint8_t y0, uint8_t radius, uint16_t color){
-    int8_t xCurr, yMax = 0, y = 0;
+
+void OLED_circle(uint8_t x0, uint8_t y0, uint8_t radius){
+    int8_t xCurr, yMax = 0, y = 0, x;
     int16_t d = 0;
-   
+
     radius = radius <= 1 ? 1 : radius;
     xCurr = radius+1;
     yMax = 0;
@@ -168,15 +151,15 @@ void OLED_DrawCircle(uint8_t x0, uint8_t y0, uint8_t radius, uint16_t color){
         yMax++;
         if(d >= 0){
             for(y = y; y < yMax; y++){
-                for(uint8_t x = y; x < xCurr; x++){
-                    OLED_DrawPoint(x0 + x,y0 + y, color);
-                    OLED_DrawPoint(x0 + x,y0 - y, color);
-                    OLED_DrawPoint(x0 - x,y0 + y, color);
-                    OLED_DrawPoint(x0 - x,y0 - y, color);    
-                    OLED_DrawPoint(x0 + y,y0 + x, color);
-                    OLED_DrawPoint(x0 + y,y0 - x, color);
-                    OLED_DrawPoint(x0 - y,y0 + x, color);
-                    OLED_DrawPoint(x0 - y,y0 - x, color);
+                for(x = y; x < xCurr; x++){
+                    OLED_point(x0 + x,y0 + y);
+                    OLED_point(x0 + x,y0 - y);
+                    OLED_point(x0 - x,y0 + y);
+                    OLED_point(x0 - x,y0 - y);
+                    OLED_point(x0 + y,y0 + x);
+                    OLED_point(x0 + y,y0 - x);
+                    OLED_point(x0 - y,y0 + x);
+                    OLED_point(x0 - y,y0 - x);
                 }
             }
             d += -2*xCurr + 1;
@@ -184,7 +167,8 @@ void OLED_DrawCircle(uint8_t x0, uint8_t y0, uint8_t radius, uint16_t color){
         }
     }
 }
-void OLED_DrawRing(uint8_t x0, uint8_t y0, uint8_t radius, uint8_t width, uint16_t color){
+
+void OLED_ring(uint8_t x0, uint8_t y0, uint8_t radius, uint8_t width){
     int8_t x, y;
     int16_t d;
     radius += width >> 1;
@@ -194,15 +178,15 @@ void OLED_DrawRing(uint8_t x0, uint8_t y0, uint8_t radius, uint8_t width, uint16
         d = 0;
 
         while (x >= y){
-            OLED_DrawPoint(x0 + x,y0 + y, color);
-            OLED_DrawPoint(x0 + x,y0 - y, color);
-            OLED_DrawPoint(x0 - x,y0 + y, color);
-            OLED_DrawPoint(x0 - x,y0 - y, color);    
-            OLED_DrawPoint(x0 + y,y0 + x, color);
-            OLED_DrawPoint(x0 + y,y0 - x, color);
-            OLED_DrawPoint(x0 - y,y0 + x, color);
-            OLED_DrawPoint(x0 - y,y0 - x, color);
-            
+            OLED_point(x0 + x,y0 + y);
+            OLED_point(x0 + x,y0 - y);
+            OLED_point(x0 - x,y0 + y);
+            OLED_point(x0 - x,y0 - y);
+            OLED_point(x0 + y,y0 + x);
+            OLED_point(x0 + y,y0 - x);
+            OLED_point(x0 - y,y0 + x);
+            OLED_point(x0 - y,y0 - x);
+
             d += (2*y+1);
             y++;
             if(d >= 0){
@@ -213,22 +197,23 @@ void OLED_DrawRing(uint8_t x0, uint8_t y0, uint8_t radius, uint8_t width, uint16
         radius--;
     }
 }
-void OLED_DrawLine(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t width, uint16_t color){
+
+void OLED_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t width){
     int8_t x, y;
     int8_t dx, dy, D;
     width = width <= 1 ? 1 : width;
-    
+
     dx = x1 - x0;
     dy = y1 - y0;
     D = dy - dx;
     y = y0;
-    
+
     for(x = x0; x < x1; x++){
         if(x <= OLED_DIM_WIDTH && y <= OLED_DIM_HEIGHT){
             if(width <= 1){
-                OLED_DrawPoint(x,y, color);
+                OLED_point(x,y);
             } else {
-                OLED_DrawCircle(x, y, width/2, color);
+                OLED_circle(x, y, width/2);
             }
         }
         if(D >= 0){
@@ -238,123 +223,56 @@ void OLED_DrawLine(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t width
         D = D + dy;
     }
 }
-void OLED_DrawRectangle(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y, uint16_t color){
+
+void OLED_rectangle(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y){
     oledC_setColumnAddressBounds(start_x,end_x);
     oledC_setRowAddressBounds(start_y,end_y);
-    for(uint8_t x = start_x; x < end_x+1; x++){
-        for(uint8_t y = start_y; y < end_y+1; y++){
+    uint8_t x, y;
+    for( x = start_x; x < end_x+1; x++){
+        for(y = start_y; y < end_y+1; y++){
             oledC_sendColorInt(color);
         }
     }
 }
-void OLED_DrawCharacter(uint8_t x, uint8_t y, uint8_t sx, uint8_t sy, uint8_t ch, uint16_t color){   
+
+void OLED_putc(uint8_t x, uint8_t y, uint8_t ch){
     const uint8_t *f = &font[(ch-' ')*OLED_FONT_WIDTH]; // find the char in our font...
-    
-    for(uint16_t i_x = 0; i_x < OLED_FONT_WIDTH * sx; i_x += sx) { // For each line of our text...
+    uint16_t i_x, i_y;
+    for(i_x = 0; i_x < OLED_FONT_WIDTH * sx; i_x += sx) { // For each line of our text...
         uint8_t curr_char_byte = *f++;
-        for(uint16_t i_y = OLED_FONT_HEIGHT*sy; i_y > 0; i_y -= sy){
-            if(curr_char_byte & 0x01){
-                OLED_DrawRectangle(x+i_x, y+i_y, x+i_x+sx-1, y+i_y+sy-1, color);
+        for(i_y = OLED_FONT_HEIGHT*sy; i_y > 0; i_y -= sy){
+            if(curr_char_byte & 0x80){
+                OLED_rectangle(x+i_x, y+i_y, x+i_x+sx-1, y+i_y+sy-1);
             }
-            curr_char_byte >>= 1;
-        }
-    }
-}
-void OLED_DrawString(uint8_t x, uint8_t y, uint8_t sx, uint8_t sy, uint8_t *string, uint16_t color){
-    while(*string){
-        OLED_DrawCharacter(x, y, sx, sy, *string++, color);
-        x += OLED_FONT_WIDTH * sx + 1;
-    }
-}
-void OLED_DrawBitmap(uint8_t x, uint8_t y, uint16_t color, uint8_t sx, uint8_t sy, uint24_t *bitmap, uint8_t bitmap_length){
-    const uint8_t bitmap_width = 24;
-    sx = sx == 0 ? 1 : sx;
-    sy = sy == 0 ? 1 : sy;
-    for(uint8_t rowNum = 0; rowNum < bitmap_length; rowNum++){
-        uint24_t rowBits = *bitmap++;
-        uint8_t curr_y = y + rowNum*sy;
-        for(uint8_t bitNum = 0; bitNum < bitmap_width; bitNum++){
-            if(!(rowBits & 0x01)){
-                uint8_t curr_x = x + (bitmap_width - bitNum)*sx;
-                OLED_DrawRectangle(curr_x, curr_y, curr_x+sx-1, curr_y+sy-1, color);
-            }
-            rowBits >>= 0x000001;
+            curr_char_byte <<= 1;
         }
     }
 }
 
-/* Standardized Shape Drawing */
-void drawPoint(shape_t *shape){
-    OLED_DrawPoint(
-        shape->params.point.x, 
-        shape->params.point.y,
-        shape->params.point.color
-    );
+void OLED_puts(uint8_t x, uint8_t y, uint8_t *string)
+{
+    while(*string){
+        OLED_putc(x, y, *string++);
+        x += OLED_FONT_WIDTH * sx + 1;
+    }
 }
-void drawCircle(shape_t *shape){
-    OLED_DrawCircle(
-        shape->params.circle.xc, 
-        shape->params.circle.yc, 
-        shape->params.circle.radius, 
-        shape->params.circle.color
-    );
+
+void OLED_drawBitmap(uint8_t x, uint8_t y, uint8_t *bitmap, uint8_t bitmap_length){
+    const uint8_t bitmap_width = 24;
+    sx = sx == 0 ? 1 : sx;
+    sy = sy == 0 ? 1 : sy;
+    uint8_t rowNum, bitNum, rowBits;
+    for( rowNum = 0; rowNum < bitmap_length; rowNum++){
+        uint8_t curr_y = y + rowNum*sy;
+        for( bitNum = 0; bitNum < bitmap_width; bitNum++){
+            if ((bitNum & 0x7) == 0)
+                rowBits = *bitmap++;
+            if(!(rowBits & 0x80)){
+                uint8_t curr_x = x + (bitNum)*sx;
+                OLED_rectangle(curr_x, curr_y, curr_x+sx-1, curr_y+sy-1);
+            }
+            rowBits <<= 1;
+        }
+    }
 }
-void drawRing(shape_t *shape){
-    OLED_DrawRing(
-        shape->params.ring.x0, 
-        shape->params.ring.y0, 
-        shape->params.ring.radius, 
-        shape->params.ring.width, 
-        shape->params.ring.color
-    );
-}
-void drawRectangle(shape_t *shape){
-    OLED_DrawRectangle(
-        shape->params.rectangle.xs, 
-        shape->params.rectangle.ys,
-        shape->params.rectangle.xe, 
-        shape->params.rectangle.ye, 
-        shape->params.rectangle.color
-    );
-}
-void drawLine(shape_t *shape){
-    OLED_DrawLine(
-        shape->params.line.xs, 
-        shape->params.line.ys,
-        shape->params.line.xe, 
-        shape->params.line.ye, 
-        shape->params.line.width, 
-        shape->params.line.color
-    );
-}
-void drawCharacter(shape_t *shape){
-    OLED_DrawCharacter(
-        shape->params.character.x, 
-        shape->params.character.y,
-        shape->params.character.scale_x, 
-        shape->params.character.scale_y, 
-        shape->params.character.character, 
-        shape->params.character.color
-    );
-}
-void drawString(shape_t *shape){
-    OLED_DrawString(
-        shape->params.string.x, 
-        shape->params.string.y,
-        shape->params.string.scale_x, 
-        shape->params.string.scale_y, 
-        shape->params.string.string, 
-        shape->params.string.color
-    );
-}
-void drawBitmap(shape_t *shape){
-    OLED_DrawBitmap(
-        shape->params.bitmap.x, 
-        shape->params.bitmap.y,
-        shape->params.bitmap.color,
-        shape->params.bitmap.sx,
-        shape->params.bitmap.sy,
-        shape->params.bitmap.bit_array,
-        shape->params.bitmap.array_length
-    );
-}
+
