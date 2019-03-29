@@ -53,7 +53,14 @@
 #include "mcc_generated_files/sensors_handling.h"
 #include "mcc_generated_files/cloud/cloud_service.h"
 #include "mcc_generated_files/debug_print.h"
-#include "OLEDC_example.h"
+#include "OLEDC.h"
+#include "OLEDC_colors.h"
+#include "OLEDC_graphics.h"
+#include <time.h>
+
+#define OLEDC_TIMEOUT 10
+
+int oled_timeout = 0;
 
 //This handles messages published from the MQTT server when subscribed
 void receivedFromCloud(uint8_t *topic, uint8_t *payload)
@@ -65,27 +72,58 @@ void receivedFromCloud(uint8_t *topic, uint8_t *payload)
     {
         LED_holdYellowOn( subString[strlen(toggleToken)] == '1' );
     }
-
-
-    debug_printer(SEVERITY_NONE, LEVEL_NORMAL, "topic: %s", topic);
+    OLEDC_setScale(1,1);
+    OLEDC_setColor(OLEDC_COLOR_GREEN);
+    OLEDC_puts(0, 0, (char*)payload);
+    oled_timeout = OLEDC_TIMEOUT;
+//    debug_printer(SEVERITY_NONE, LEVEL_NORMAL, "topic: %s", topic);
     debug_printer(SEVERITY_NONE, LEVEL_NORMAL, "payload: %s", payload);
 }
 
-// This will get called every 1 second only while we have a valid Cloud connection
+extern time_t timeNow;
+
+// This will get called every CFG_SEND_INTERVAL only while we have a valid Cloud connection
 void sendToCloud(void)
 {
-   static char json[70];
+   static char json[100];
 
-   // This part runs every CFG_SEND_INTERVAL seconds
+   // This part runs every seconds
    int rawTemperature = SENSORS_getTempValue();
    int light = SENSORS_getLightValue();
-   int len = sprintf(json, "{\"Light\":%d,\"Temp\":\"%d.%02d\"}", light,rawTemperature/100,abs(rawTemperature)%100);
-
+   int len = sprintf(json, "{\"Light\":%d,\"Temp\":\"%d.%02d\"}",
+                            light,rawTemperature/100,abs(rawTemperature)%100);
    if (len >0) {
       CLOUD_publishData((uint8_t*)json, len);
       LED_flashYellow();
    }
-   OLEDC_example();
+
+    char s[30];
+    const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    struct tm* current_time;
+    current_time = localtime(&timeNow);
+    if (current_time->tm_sec % 20 == 0)
+    {
+        OLEDC_clearScreen();
+        OLEDC_setScale(2,2);
+        sprintf(s, " %02d:%02d",
+               current_time->tm_hour+1, // GMT+1
+               current_time->tm_min
+               );
+        OLEDC_puts(0, 0, s);
+        sprintf(s, " %s %02d",
+               months[current_time->tm_mon],
+               current_time->tm_mday);
+        OLEDC_puts(0, 2, s);
+        oled_timeout = OLEDC_TIMEOUT;
+    }
+
+   if (oled_timeout > 0) {
+       oled_timeout--;
+       if (oled_timeout == 0){
+           OLEDC_clearScreen();
+       }
+   }
 }
 
 #include "mcc_generated_files/application_manager.h"
@@ -98,6 +136,13 @@ int main(void)
     // initialize the device
     SYSTEM_Initialize();
     application_init();
+    OLEDC_init();
+    OLEDC_setBackground(OLEDC_COLOR_BLACK);
+    OLEDC_clearScreen();
+
+    OLEDC_setColor(OLEDC_COLOR_RED);
+    OLEDC_setScale(2, 4);
+    OLEDC_puts(0, 4, "PIC-IoT");
 
     while (1)
     {

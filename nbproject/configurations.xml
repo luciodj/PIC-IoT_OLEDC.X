@@ -208,7 +208,6 @@
         <itemPath>mcc_generated_files/spi2_driver.h</itemPath>
         <itemPath>mcc_generated_files/spi2_types.h</itemPath>
         <itemPath>OLEDC_colors.h</itemPath>
-        <itemPath>OLEDC_example.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -425,7 +424,6 @@
       <itemPath>main.c</itemPath>
       <itemPath>OLEDC.c</itemPath>
       <itemPath>OLEDC_graphics.c</itemPath>
-      <itemPath>OLEDC_example.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

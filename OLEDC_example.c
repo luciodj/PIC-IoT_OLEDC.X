@@ -58,20 +58,6 @@ const uint8_t logo[] = {
 void OLEDC_example(void){
     int8_t shift = 0;
 
-    if(!exampleInitialized){
-        OLEDC_init();
-        OLED_setBackground(OLEDC_COLOR_BLACK);
-        OLED_setColor(OLEDC_COLOR_BLUEVIOLET);
-        OLED_setScale(2, 4);
-        exampleInitialized = true;
-    }
 
-    OLED_clearScreen();
-    OLED_puts(10+shift,10, "PIC-IoT");
-
-    shift += 2;
-    if(shift > 24){
-        shift = 0;
-    }
 }
 

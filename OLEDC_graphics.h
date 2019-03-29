@@ -29,28 +29,28 @@
 #include <stdint.h>
 #include <string.h>
 
-#define OLED_DIM_WIDTH      95
-#define OLED_DIM_HEIGHT     95
-#define OLED_FONT_WIDTH     5
-#define OLED_FONT_HEIGHT    8
+#define OLEDC_DIM_WIDTH      95
+#define OLEDC_DIM_HEIGHT     95
+#define OLEDC_FONT_WIDTH     5
+#define OLEDC_FONT_HEIGHT    8
 
-void OLED_setScale(uint8_t _sx, uint8_t _sy);
+void OLEDC_setScale(uint8_t _sx, uint8_t _sy);
 
-void OLED_setColor(uint16_t c);
+void OLEDC_setColor(uint16_t c);
 
-void OLED_clearScreen(void);
+void OLEDC_clearScreen(void);
 
-void OLED_setBackground(uint16_t color);
+void OLEDC_setBackground(uint16_t color);
 
 
-void OLED_circle(uint8_t center_x, uint8_t center_y, uint8_t radius);
-void OLED_ring(uint8_t center_x, uint8_t center_y, uint8_t radius, uint8_t width);
-void OLED_rectangle(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y);
-void OLED_line(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y, uint8_t width);
-void OLED_point(uint8_t x, uint8_t y);
-void OLED_thickPoint(uint8_t center_x, uint8_t center_y, uint8_t width);
-void OLED_putc(uint8_t x, uint8_t y,uint8_t ch);
-void OLED_puts(uint8_t x, uint8_t y, uint8_t *string);
-void OLED_drawBitmap(uint8_t x, uint8_t y, uint8_t *bit_array, uint8_t len);
+void OLEDC_circle(uint8_t center_x, uint8_t center_y, uint8_t radius);
+void OLEDC_ring(uint8_t center_x, uint8_t center_y, uint8_t radius, uint8_t width);
+void OLEDC_rectangle(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y);
+void OLEDC_line(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y, uint8_t width);
+void OLEDC_point(uint8_t x, uint8_t y);
+void OLEDC_thickPoint(uint8_t center_x, uint8_t center_y, uint8_t width);
+void OLEDC_putc(uint8_t x, uint8_t y, char ch);
+void OLEDC_puts(uint8_t x, uint8_t y, char *string);
+void OLEDC_drawBitmap(uint8_t x, uint8_t y, uint8_t *bit_array, uint8_t len);
 
 #endif	/* OLEDC_SHAPES_H */

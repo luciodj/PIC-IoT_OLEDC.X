@@ -3,7 +3,7 @@
  *
  * Created: 10/4/2018 1:37:19 PM
  *  Author: I17643
- */ 
+ */
 
 #include <string.h>
 #include <time.h>
@@ -42,22 +42,22 @@ void  wifiConnectionStateChanged(uint8_t status);
 
 void application_init(){
     uint8_t mode = WIFI_DEFAULT;
-   
+
    LED_test();
-#if CFG_ENABLE_CLI     
+#if CFG_ENABLE_CLI
    CLI_init();
    CLI_setdeviceId(attDeviceID);
-#endif   
+#endif
    debug_init(attDeviceID);
-   
+
    // Initialization of modules where the init needs interrupts to be enabled
-   cryptoauthlib_init(); 
-   
+   cryptoauthlib_init();
+
    if (cryptoDeviceInitialized == false)
    {
       debug_printError("APP: CryptoAuthInit failed");
    }
-   // Get serial number from the ECC608 chip 
+   // Get serial number from the ECC608 chip
    retValCryptoClientSerialNumber = CRYPTO_CLIENT_printSerialNumber(attDeviceID);
    if( retValCryptoClientSerialNumber != ATCA_SUCCESS )
    {
@@ -72,13 +72,13 @@ void application_init(){
              debug_printError("APP: DeviceID generation failed");
          break;
       }
-       
+
    }
-#if CFG_ENABLE_CLI   
+#if CFG_ENABLE_CLI
    CLI_setdeviceId(attDeviceID);
-#endif   
+#endif
    debug_setPrefix(attDeviceID);
-   
+
     if(!SW0_Value && SW1_Value)
     {
         //SW0 only
@@ -97,12 +97,12 @@ void application_init(){
         LED_startBlinkingGreen();
     }
     wifi_init(wifiConnectionStateChanged, mode);
-   
+
     if (mode == WIFI_DEFAULT) {
        CLOUD_init(attDeviceID);
        timeout_create(&MAIN_dataTasksTimer, MAIN_DATATASK_INTERVAL);
     }
-   
+
     LED_test();
 }
 
@@ -121,7 +121,7 @@ void  wifiConnectionStateChanged(uint8_t status)
    {
       // Restart the WIFI module if we get disconnected from the WiFi Access Point (AP)
       CLOUD_reset();
-   } 
+   }
 }
 
 
@@ -132,32 +132,34 @@ void runScheduler(void)
 }
 
 
-// This could be better done with a function pointer (DI) but in the interest of simplicity 
-//     we avoided that. This is being called from MAIN_dataTask below  
+// This could be better done with a function pointer (DI) but in the interest of simplicity
+//     we avoided that. This is being called from MAIN_dataTask below
 void sendToCloud(void);
+
+time_t timeNow;
 
 // This gets called by the scheduler approximately every 100ms
 uint32_t MAIN_dataTask(void *payload)
 {
    static time_t previousTransmissionTime = 0;
-   
+
    // Get the current time. This uses the C standard library time functions
-   time_t timeNow = time(NULL);
-   
+    timeNow = time(NULL);
+
    // Example of how to send data when MQTT is connected every 1 second based on the system clock
    if (CLOUD_isConnected())
    {
       // How many seconds since the last time this loop ran?
       int32_t delta = difftime(timeNow,previousTransmissionTime);
-   
+
       if (delta >= CFG_SEND_INTERVAL)
       {
          previousTransmissionTime = timeNow;
-         
+
          // Call the data task in main.c
          sendToCloud();
       }
-   } 
+   }
 
     if(shared_networking_params.haveAPConnection)
     {
@@ -186,8 +188,8 @@ uint32_t MAIN_dataTask(void *payload)
             LED_GREEN_SetHigh();
         }
     }
-   
+
    // This is milliseconds managed by the RTC and the scheduler, this return makes the
    //      timer run another time, returning 0 will make it stop
-   return MAIN_DATATASK_INTERVAL; 
+   return MAIN_DATATASK_INTERVAL;
 }

@@ -66,18 +66,18 @@ uint8_t sx=1, sy=1;
 uint16_t color;
 uint16_t background_color;
 
-void OLED_setScale(uint8_t _sx, uint8_t _sy)
+void OLEDC_setScale(uint8_t _sx, uint8_t _sy)
 {
     sx = _sx;
     sy = _sy;
 }
 
-void OLED_setColor(uint16_t c)
+void OLEDC_setColor(uint16_t c)
 {
     color = c;
 }
 
-void OLED_clearScreen(void) {
+void OLEDC_clearScreen(void) {
     oledC_setColumnAddressBounds(0,96);
     oledC_setRowAddressBounds(0,96);
     uint8_t x, y;
@@ -88,15 +88,15 @@ void OLED_clearScreen(void) {
     }
 }
 
-void OLED_setBackground(uint16_t color){
+void OLEDC_setBackground(uint16_t color){
     background_color = color;
-    OLED_clearScreen();
+    OLEDC_clearScreen();
 }
 
 uint8_t coerceAddressAdditionWithinRange(uint8_t base_address, int8_t adder){
     int16_t additionResult = base_address+adder;
-    if(additionResult > (int16_t)OLED_DIM_WIDTH){
-        return OLED_DIM_WIDTH;
+    if(additionResult > (int16_t)OLEDC_DIM_WIDTH){
+        return OLEDC_DIM_WIDTH;
     }
     if(additionResult < (int16_t) 0x00) {
         return 0x00;
@@ -104,19 +104,19 @@ uint8_t coerceAddressAdditionWithinRange(uint8_t base_address, int8_t adder){
     return (uint8_t) (base_address+adder);
 }
 
-void OLED_point(uint8_t x, uint8_t y){
-    if(x > OLED_DIM_WIDTH || y > OLED_DIM_HEIGHT){
+void OLEDC_point(uint8_t x, uint8_t y){
+    if(x > OLEDC_DIM_WIDTH || y > OLEDC_DIM_HEIGHT){
         return;
     }
-    oledC_setColumnAddressBounds(x,95);
-    oledC_setRowAddressBounds(y,95);
+    oledC_setColumnAddressBounds(95-x,95);
+    oledC_setRowAddressBounds(95-y,95);
     oledC_sendColorInt(color);
 }
 
-void OLED_thickPoint(uint8_t center_x, uint8_t center_y, uint8_t width){
+void OLEDC_thickPoint(uint8_t center_x, uint8_t center_y, uint8_t width){
     uint8_t max_x,min_x,max_y, min_y;
     uint8_t x, y, dx, dy;
-    if((center_x-width) > OLED_DIM_WIDTH || (center_y-width) > OLED_DIM_HEIGHT){
+    if((center_x-width) > OLEDC_DIM_WIDTH || (center_y-width) > OLEDC_DIM_HEIGHT){
         return;
     }
     width = (width <= 1) ? 1 : width;
@@ -130,13 +130,13 @@ void OLED_thickPoint(uint8_t center_x, uint8_t center_y, uint8_t width){
         for(y = min_y; y < max_y; y++){
             dy = (center_y >= y) ? (center_y-y) : (y - center_y);
             if(((dy+dx) <= width)|| (dy*dy+dx*dx) <= (width*width)){
-                OLED_point(x, y);
+                OLEDC_point(x, y);
             }
         }
     }
 }
 
-void OLED_circle(uint8_t x0, uint8_t y0, uint8_t radius){
+void OLEDC_circle(uint8_t x0, uint8_t y0, uint8_t radius){
     int8_t xCurr, yMax = 0, y = 0, x;
     int16_t d = 0;
 
@@ -152,14 +152,14 @@ void OLED_circle(uint8_t x0, uint8_t y0, uint8_t radius){
         if(d >= 0){
             for(y = y; y < yMax; y++){
                 for(x = y; x < xCurr; x++){
-                    OLED_point(x0 + x,y0 + y);
-                    OLED_point(x0 + x,y0 - y);
-                    OLED_point(x0 - x,y0 + y);
-                    OLED_point(x0 - x,y0 - y);
-                    OLED_point(x0 + y,y0 + x);
-                    OLED_point(x0 + y,y0 - x);
-                    OLED_point(x0 - y,y0 + x);
-                    OLED_point(x0 - y,y0 - x);
+                    OLEDC_point(x0 + x,y0 + y);
+                    OLEDC_point(x0 + x,y0 - y);
+                    OLEDC_point(x0 - x,y0 + y);
+                    OLEDC_point(x0 - x,y0 - y);
+                    OLEDC_point(x0 + y,y0 + x);
+                    OLEDC_point(x0 + y,y0 - x);
+                    OLEDC_point(x0 - y,y0 + x);
+                    OLEDC_point(x0 - y,y0 - x);
                 }
             }
             d += -2*xCurr + 1;
@@ -168,7 +168,7 @@ void OLED_circle(uint8_t x0, uint8_t y0, uint8_t radius){
     }
 }
 
-void OLED_ring(uint8_t x0, uint8_t y0, uint8_t radius, uint8_t width){
+void OLEDC_ring(uint8_t x0, uint8_t y0, uint8_t radius, uint8_t width){
     int8_t x, y;
     int16_t d;
     radius += width >> 1;
@@ -178,14 +178,14 @@ void OLED_ring(uint8_t x0, uint8_t y0, uint8_t radius, uint8_t width){
         d = 0;
 
         while (x >= y){
-            OLED_point(x0 + x,y0 + y);
-            OLED_point(x0 + x,y0 - y);
-            OLED_point(x0 - x,y0 + y);
-            OLED_point(x0 - x,y0 - y);
-            OLED_point(x0 + y,y0 + x);
-            OLED_point(x0 + y,y0 - x);
-            OLED_point(x0 - y,y0 + x);
-            OLED_point(x0 - y,y0 - x);
+            OLEDC_point(x0 + x,y0 + y);
+            OLEDC_point(x0 + x,y0 - y);
+            OLEDC_point(x0 - x,y0 + y);
+            OLEDC_point(x0 - x,y0 - y);
+            OLEDC_point(x0 + y,y0 + x);
+            OLEDC_point(x0 + y,y0 - x);
+            OLEDC_point(x0 - y,y0 + x);
+            OLEDC_point(x0 - y,y0 - x);
 
             d += (2*y+1);
             y++;
@@ -198,7 +198,7 @@ void OLED_ring(uint8_t x0, uint8_t y0, uint8_t radius, uint8_t width){
     }
 }
 
-void OLED_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t width){
+void OLEDC_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t width){
     int8_t x, y;
     int8_t dx, dy, D;
     width = width <= 1 ? 1 : width;
@@ -209,11 +209,11 @@ void OLED_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t width){
     y = y0;
 
     for(x = x0; x < x1; x++){
-        if(x <= OLED_DIM_WIDTH && y <= OLED_DIM_HEIGHT){
+        if(x <= OLEDC_DIM_WIDTH && y <= OLEDC_DIM_HEIGHT){
             if(width <= 1){
-                OLED_point(x,y);
+                OLEDC_point(x,y);
             } else {
-                OLED_circle(x, y, width/2);
+                OLEDC_circle(x, y, width/2);
             }
         }
         if(D >= 0){
@@ -224,9 +224,9 @@ void OLED_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t width){
     }
 }
 
-void OLED_rectangle(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y){
-    oledC_setColumnAddressBounds(start_x,end_x);
-    oledC_setRowAddressBounds(start_y,end_y);
+void OLEDC_rectangle(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y){
+    oledC_setColumnAddressBounds(95-end_x, 95 - start_x);
+    oledC_setRowAddressBounds(95-end_y, 95-start_y);
     uint8_t x, y;
     for( x = start_x; x < end_x+1; x++){
         for(y = start_y; y < end_y+1; y++){
@@ -235,29 +235,29 @@ void OLED_rectangle(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end
     }
 }
 
-void OLED_putc(uint8_t x, uint8_t y, uint8_t ch){
-    const uint8_t *f = &font[(ch-' ')*OLED_FONT_WIDTH]; // find the char in our font...
+void OLEDC_putc(uint8_t x, uint8_t y, char ch){
+    const uint8_t *f = &font[(ch-' ')*OLEDC_FONT_WIDTH]; // find the char in our font...
     uint16_t i_x, i_y;
-    for(i_x = 0; i_x < OLED_FONT_WIDTH * sx; i_x += sx) { // For each line of our text...
+    for(i_x = 0; i_x < OLEDC_FONT_WIDTH * sx; i_x += sx) { // For each line of our text...
         uint8_t curr_char_byte = *f++;
-        for(i_y = OLED_FONT_HEIGHT*sy; i_y > 0; i_y -= sy){
+        for(i_y = OLEDC_FONT_HEIGHT*sy; i_y > 0; i_y -= sy){
             if(curr_char_byte & 0x80){
-                OLED_rectangle(x+i_x, y+i_y, x+i_x+sx-1, y+i_y+sy-1);
+                OLEDC_rectangle(x+i_x, y+i_y, x+i_x+sx-1, y+i_y+sy-1);
             }
             curr_char_byte <<= 1;
         }
     }
 }
 
-void OLED_puts(uint8_t x, uint8_t y, uint8_t *string)
+void OLEDC_puts(uint8_t x, uint8_t y, char *string)
 {
     while(*string){
-        OLED_putc(x, y, *string++);
-        x += OLED_FONT_WIDTH * sx + 1;
+        OLEDC_putc(x, y*8, *string++);
+        x += OLEDC_FONT_WIDTH * sx + 1;
     }
 }
 
-void OLED_drawBitmap(uint8_t x, uint8_t y, uint8_t *bitmap, uint8_t bitmap_length){
+void OLEDC_drawBitmap(uint8_t x, uint8_t y, uint8_t *bitmap, uint8_t bitmap_length){
     const uint8_t bitmap_width = 24;
     sx = sx == 0 ? 1 : sx;
     sy = sy == 0 ? 1 : sy;
@@ -269,7 +269,7 @@ void OLED_drawBitmap(uint8_t x, uint8_t y, uint8_t *bitmap, uint8_t bitmap_lengt
                 rowBits = *bitmap++;
             if(!(rowBits & 0x80)){
                 uint8_t curr_x = x + (bitNum)*sx;
-                OLED_rectangle(curr_x, curr_y, curr_x+sx-1, curr_y+sy-1);
+                OLEDC_rectangle(curr_x, curr_y, curr_x+sx-1, curr_y+sy-1);
             }
             rowBits <<= 1;
         }
