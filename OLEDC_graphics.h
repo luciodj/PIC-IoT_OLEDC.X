@@ -43,8 +43,8 @@ void OLEDC_clearScreen(void);
 void OLEDC_setBackground(uint16_t color);
 
 
-void OLEDC_circle(uint8_t center_x, uint8_t center_y, uint8_t radius);
-void OLEDC_ring(uint8_t center_x, uint8_t center_y, uint8_t radius, uint8_t width);
+void OLEDC_filled_circle(uint8_t center_x, uint8_t center_y, uint8_t radius);
+void OLEDC_circle(uint8_t center_x, uint8_t center_y, uint8_t radius, uint8_t width);
 void OLEDC_rectangle(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y);
 void OLEDC_line(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y, uint8_t width);
 void OLEDC_point(uint8_t x, uint8_t y);

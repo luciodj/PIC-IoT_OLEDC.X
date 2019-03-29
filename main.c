@@ -58,7 +58,7 @@
 #include "OLEDC_graphics.h"
 #include <time.h>
 
-#define OLEDC_TIMEOUT 10
+#define OLEDC_TIMEOUT 9
 
 int oled_timeout = 0;
 
@@ -102,20 +102,54 @@ void sendToCloud(void)
                              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     struct tm* current_time;
     current_time = localtime(&timeNow);
-    if (current_time->tm_sec % 20 == 0)
+    if (current_time->tm_sec % 10 == 0)
     {
         OLEDC_clearScreen();
+        OLEDC_setColor(OLEDC_COLOR_GREEN);
         OLEDC_setScale(2,2);
         sprintf(s, " %02d:%02d",
                current_time->tm_hour+1, // GMT+1
                current_time->tm_min
                );
-        OLEDC_puts(0, 0, s);
+        OLEDC_puts(6, 0, s);
         sprintf(s, " %s %02d",
                months[current_time->tm_mon],
                current_time->tm_mday);
-        OLEDC_puts(0, 2, s);
+        OLEDC_puts(4, 2, s);
         oled_timeout = OLEDC_TIMEOUT;
+
+        const int cx=50, cy=65;
+        float r=30;
+        const float sin[] = {
+            0.0, 0.499770102643, 0.865759839492, 1.0,
+            0.866555800056, 0.501148958014, 0.00, -0.498389979583,
+            -0.86496168289, -1.0, -0.867349562562, -0.502526542197
+        };
+        const float cos[] = {
+            1.0, 0.866158094405, 0.500459689008, 0.0,
+            -0.499080199356, -0.865361035569, -1.0, -0.866952956193,
+            -0.501837909222, -0.0, 0.497699443764, 0.864561781706,
+        };
+        OLEDC_setColor(OLEDC_COLOR_WHITE);
+        OLEDC_circle(cx, cy, r, 1);
+
+        OLEDC_setColor(OLEDC_COLOR_RED);
+        int angle = (current_time->tm_sec/5+9)%12;
+        OLEDC_line(cx, cy, cx+(r*cos[angle]), cy+(r*sin[angle]), 1);
+
+        OLEDC_setColor(OLEDC_COLOR_BLUE);
+        angle = (current_time->tm_min/5+9)%12;
+        r = 25;
+        OLEDC_line(cx, cy, cx+(r*cos[angle]), cy+(r*sin[angle]), 2);
+
+        OLEDC_setColor(OLEDC_COLOR_GREEN);
+        angle = (current_time->tm_hour+1+9)%12;
+        r = 18;
+        OLEDC_line(cx, cy, cx+(r*cos[angle]), cy+(r*sin[angle]), 4);
+//        char s[16];
+//        sprintf(s, "%02d", angle);
+//        puts(s);
+//        OLEDC_puts(cx, 6, s);
     }
 
    if (oled_timeout > 0) {
@@ -142,7 +176,7 @@ int main(void)
 
     OLEDC_setColor(OLEDC_COLOR_RED);
     OLEDC_setScale(2, 4);
-    OLEDC_puts(0, 4, "PIC-IoT");
+    OLEDC_puts(6, 4, "PIC-IoT");
 
     while (1)
     {
