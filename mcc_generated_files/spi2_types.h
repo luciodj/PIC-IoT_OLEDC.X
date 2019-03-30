@@ -25,8 +25,8 @@
 
 /* SPI interfaces */
 typedef enum { 
-    oledC_CONFIG,
-    SPI2_DEFAULT
+    SPI2_DEFAULT,
+    OLEDC_CONFIG
 } spi2_modes;
 
 #endif	/* SPI2_TYPES_H */

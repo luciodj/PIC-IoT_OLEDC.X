@@ -26,16 +26,16 @@
 
 #include "spi_master.h"
 
-inline bool oledC_open(void);
+inline bool OLEDC_open(void);
 inline bool WINC_open(void);
 
 const spi_master_functions_t spiMaster[] = {   
-    { spi2_close, oledC_open, spi2_exchangeByte, spi2_exchangeBlock, spi2_writeBlock, spi2_readBlock, spi2_writeByte, spi2_readByte, spi2_setSpiISR, spi2_isr },
+    { spi2_close, OLEDC_open, spi2_exchangeByte, spi2_exchangeBlock, spi2_writeBlock, spi2_readBlock, spi2_writeByte, spi2_readByte, spi2_setSpiISR, spi2_isr },
     { spi1_close, WINC_open, spi1_exchangeByte, spi1_exchangeBlock, spi1_writeBlock, spi1_readBlock, spi1_writeByte, spi1_readByte, spi1_setSpiISR, spi1_isr }
 };
 
-inline bool oledC_open(void){
-    return spi2_open(oledC_CONFIG);
+inline bool OLEDC_open(void){
+    return spi2_open(OLEDC_CONFIG);
 }
 
 inline bool WINC_open(void){
@@ -45,8 +45,8 @@ inline bool WINC_open(void){
 //This function serves keep backwards compatibility with older api users
 inline bool spi_master_open(spi_master_configurations_t config){
     switch(config){
-        case oledC:
-            return oledC_open();
+        case OLEDC:
+            return OLEDC_open();
         case WINC:
             return WINC_open();
         default:

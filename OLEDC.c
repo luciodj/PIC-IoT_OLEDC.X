@@ -35,7 +35,7 @@ void startStreamingIfNeeded(OLEDC_COMMAND cmd);
 void stopStreaming(void);
 uint16_t exchangeTwoBytes(uint8_t byte1, uint8_t byte2);
 
-oledc_color_t oledC_parseIntToRGB(uint16_t raw){
+oledc_color_t OLEDC_parseIntToRGB(uint16_t raw){
     oledc_color_t parsedColor;
     uint8_t byte1 = raw >> 8;
     uint8_t byte2 = raw & 0xFF;
@@ -45,7 +45,7 @@ oledc_color_t oledC_parseIntToRGB(uint16_t raw){
     return parsedColor;
 }
 
-uint16_t oledC_parseRGBToInt(uint8_t red, uint8_t green, uint8_t blue){
+uint16_t OLEDC_parseRGBToInt(uint8_t red, uint8_t green, uint8_t blue){
     red &= 0x1F;
     green &= 0x3F;
     blue &= 0x1F;
@@ -67,8 +67,8 @@ void stopStreaming(void){
     streamingMode = NOSTREAM;
 }
 uint16_t exchangeTwoBytes(uint8_t byte1, uint8_t byte2){
-    if(!spi_master_open(oledC)){
-        return;
+    if(!spi_master_open(OLEDC)){
+        return -1;
     };
     byte1 = spi2_exchangeByte(byte1);
     byte2 = spi2_exchangeByte(byte2);
@@ -77,30 +77,30 @@ uint16_t exchangeTwoBytes(uint8_t byte1, uint8_t byte2){
 }
 
 void sendCommand(OLEDC_COMMAND cmd, uint8_t *payload, uint8_t payload_size){
-    if(!spi_master_open(oledC)){
+    if(!spi_master_open(OLEDC)){
         return;
     };
-    oledC_nCS_SetLow();
-    oledC_DC_SetLow();
+    OLEDC_nCS_SetLow();
+    OLEDC_DC_SetLow();
     spi2_exchangeByte(cmd);
     if(payload_size > 0){
-        oledC_DC_SetHigh();
+        OLEDC_DC_SetHigh();
         spi2_writeBlock(payload, payload_size);
-        oledC_DC_SetLow();
+        OLEDC_DC_SetLow();
     }
-    oledC_nCS_SetHigh();
+    OLEDC_nCS_SetHigh();
     spi2_close();
     startStreamingIfNeeded(cmd);
 }
 
-void oledC_setRowAddressBounds(uint8_t min, uint8_t max){
+void OLEDC_setRowAddressBounds(uint8_t min, uint8_t max){
     uint8_t payload[2];
     payload[0] = min > 95 ? 95 : min;
     payload[1] = max > 95 ? 95 : max;
     sendCommand(OLEDC_CMD_SET_ROW_ADDRESS, payload, 2);
 
 }
-void oledC_setColumnAddressBounds(uint8_t min, uint8_t max){
+void OLEDC_setColumnAddressBounds(uint8_t min, uint8_t max){
     min = min > 95 ? 95 : min;
     max = max > 95 ? 95 : max;
     uint8_t payload[2];
@@ -109,22 +109,22 @@ void oledC_setColumnAddressBounds(uint8_t min, uint8_t max){
     sendCommand(OLEDC_CMD_SET_COLUMN_ADDRESS, payload, 2);
 }
 
-void oledC_setSleepMode(bool on){
+void OLEDC_setSleepMode(bool on){
     sendCommand(on ? OLEDC_CMD_SET_SLEEP_MODE_ON : OLEDC_CMD_SET_SLEEP_MODE_OFF, NULL, 0);
 }
 
-void oledC_startReadingDisplay(void){
+void OLEDC_startReadingDisplay(void){
     sendCommand(OLEDC_CMD_READ_RAM, NULL, 0);
-    oledC_nCS_SetLow();
-    oledC_DC_SetHigh();
+    OLEDC_nCS_SetLow();
+    OLEDC_DC_SetHigh();
 }
-void oledC_stopReadingDisplay(void){
-    oledC_stopWritingDisplay();
+void OLEDC_stopReadingDisplay(void){
+    OLEDC_stopWritingDisplay();
 }
 
-uint16_t oledC_readColor(void){
+uint16_t OLEDC_readColor(void){
     if(streamingMode != READSTREAM){
-        oledC_startReadingDisplay();
+        OLEDC_startReadingDisplay();
     }
     if(streamingMode != READSTREAM){
         return 0xFFFF;
@@ -132,22 +132,22 @@ uint16_t oledC_readColor(void){
     return exchangeTwoBytes(0xFF, 0xFF);
 }
 
-void oledC_startWritingDisplay(void){
+void OLEDC_startWritingDisplay(void){
     sendCommand(OLEDC_CMD_WRITE_RAM, NULL, 0);
-    oledC_nCS_SetLow();
-    oledC_DC_SetHigh();
+    OLEDC_nCS_SetLow();
+    OLEDC_DC_SetHigh();
 }
-void oledC_stopWritingDisplay(void){
-    oledC_nCS_SetHigh();
-    oledC_DC_SetLow();
+void OLEDC_stopWritingDisplay(void){
+    OLEDC_nCS_SetHigh();
+    OLEDC_DC_SetLow();
     stopStreaming();
 }
-void oledC_sendColor(uint8_t r, uint8_t g, uint8_t b){
-    oledC_sendColorInt(oledC_parseRGBToInt(r,g,b));
+void OLEDC_sendColor(uint8_t r, uint8_t g, uint8_t b){
+    OLEDC_sendColorInt(OLEDC_parseRGBToInt(r,g,b));
 }
-void oledC_sendColorInt(uint16_t raw){
+void OLEDC_sendColorInt(uint16_t raw){
     if(streamingMode != WRITESTREAM){
-        oledC_startWritingDisplay();
+        OLEDC_startWritingDisplay();
     }
     if(streamingMode != WRITESTREAM){
         return;
@@ -155,18 +155,18 @@ void oledC_sendColorInt(uint16_t raw){
     exchangeTwoBytes(raw >> 8, raw & 0x00FF);
 }
 void OLEDC_init(void){
-    oledC_EN_SetLow();
-    oledC_RST_SetHigh();
-    oledC_RW_SetLow();
+    OLEDC_EN_SetLow();
+    OLEDC_RST_SetHigh();
+    OLEDC_RW_SetLow();
     __delay_ms(1);
-    oledC_RST_SetLow();
+    OLEDC_RST_SetLow();
     __delay_us(2);
-    oledC_RST_SetHigh();
-    oledC_EN_SetHigh();
+    OLEDC_RST_SetHigh();
+    OLEDC_EN_SetHigh();
     __delay_ms(1);
-    oledC_setSleepMode(false);
+    OLEDC_setSleepMode(false);
     __delay_ms(200);
 
-    oledC_setColumnAddressBounds(0, 95);
-    oledC_setRowAddressBounds(0, 95);
+    OLEDC_setColumnAddressBounds(0, 95);
+    OLEDC_setRowAddressBounds(0, 95);
 }

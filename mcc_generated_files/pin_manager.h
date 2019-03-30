@@ -73,11 +73,11 @@
   @Example
     <code>
     // Set RA0 high (1)
-    oledC_nCS_SetHigh();
+    OLEDC_nCS_SetHigh();
     </code>
 
 */
-#define oledC_nCS_SetHigh()          _LATA0 = 1
+#define OLEDC_nCS_SetHigh()          _LATA0 = 1
 /**
   @Summary
     Sets the GPIO pin, RA0, low using LATA0.
@@ -97,11 +97,11 @@
   @Example
     <code>
     // Set RA0 low (0)
-    oledC_nCS_SetLow();
+    OLEDC_nCS_SetLow();
     </code>
 
 */
-#define oledC_nCS_SetLow()           _LATA0 = 0
+#define OLEDC_nCS_SetLow()           _LATA0 = 0
 /**
   @Summary
     Toggles the GPIO pin, RA0, using LATA0.
@@ -121,11 +121,11 @@
   @Example
     <code>
     // Toggle RA0
-    oledC_nCS_Toggle();
+    OLEDC_nCS_Toggle();
     </code>
 
 */
-#define oledC_nCS_Toggle()           _LATA0 ^= 1
+#define OLEDC_nCS_Toggle()           _LATA0 ^= 1
 /**
   @Summary
     Reads the value of the GPIO pin, RA0.
@@ -147,11 +147,11 @@
     uint16_t portValue;
 
     // Read RA0
-    postValue = oledC_nCS_GetValue();
+    postValue = OLEDC_nCS_GetValue();
     </code>
 
 */
-#define oledC_nCS_GetValue()         _RA0
+#define OLEDC_nCS_GetValue()         _RA0
 /**
   @Summary
     Configures the GPIO pin, RA0, as an input.
@@ -171,11 +171,11 @@
   @Example
     <code>
     // Sets the RA0 as an input
-    oledC_nCS_SetDigitalInput();
+    OLEDC_nCS_SetDigitalInput();
     </code>
 
 */
-#define oledC_nCS_SetDigitalInput()  _TRISA0 = 1
+#define OLEDC_nCS_SetDigitalInput()  _TRISA0 = 1
 /**
   @Summary
     Configures the GPIO pin, RA0, as an output.
@@ -195,11 +195,11 @@
   @Example
     <code>
     // Sets the RA0 as an output
-    oledC_nCS_SetDigitalOutput();
+    OLEDC_nCS_SetDigitalOutput();
     </code>
 
 */
-#define oledC_nCS_SetDigitalOutput() _TRISA0 = 0
+#define OLEDC_nCS_SetDigitalOutput() _TRISA0 = 0
 /**
   @Summary
     Sets the GPIO pin, RA1, high using LATA1.
@@ -1825,11 +1825,11 @@
   @Example
     <code>
     // Set RB14 high (1)
-    oledC_RW_SetHigh();
+    OLEDC_RW_SetHigh();
     </code>
 
 */
-#define oledC_RW_SetHigh()          _LATB14 = 1
+#define OLEDC_RW_SetHigh()          _LATB14 = 1
 /**
   @Summary
     Sets the GPIO pin, RB14, low using LATB14.
@@ -1849,11 +1849,11 @@
   @Example
     <code>
     // Set RB14 low (0)
-    oledC_RW_SetLow();
+    OLEDC_RW_SetLow();
     </code>
 
 */
-#define oledC_RW_SetLow()           _LATB14 = 0
+#define OLEDC_RW_SetLow()           _LATB14 = 0
 /**
   @Summary
     Toggles the GPIO pin, RB14, using LATB14.
@@ -1873,11 +1873,11 @@
   @Example
     <code>
     // Toggle RB14
-    oledC_RW_Toggle();
+    OLEDC_RW_Toggle();
     </code>
 
 */
-#define oledC_RW_Toggle()           _LATB14 ^= 1
+#define OLEDC_RW_Toggle()           _LATB14 ^= 1
 /**
   @Summary
     Reads the value of the GPIO pin, RB14.
@@ -1899,11 +1899,11 @@
     uint16_t portValue;
 
     // Read RB14
-    postValue = oledC_RW_GetValue();
+    postValue = OLEDC_RW_GetValue();
     </code>
 
 */
-#define oledC_RW_GetValue()         _RB14
+#define OLEDC_RW_GetValue()         _RB14
 /**
   @Summary
     Configures the GPIO pin, RB14, as an input.
@@ -1923,11 +1923,11 @@
   @Example
     <code>
     // Sets the RB14 as an input
-    oledC_RW_SetDigitalInput();
+    OLEDC_RW_SetDigitalInput();
     </code>
 
 */
-#define oledC_RW_SetDigitalInput()  _TRISB14 = 1
+#define OLEDC_RW_SetDigitalInput()  _TRISB14 = 1
 /**
   @Summary
     Configures the GPIO pin, RB14, as an output.
@@ -1947,11 +1947,11 @@
   @Example
     <code>
     // Sets the RB14 as an output
-    oledC_RW_SetDigitalOutput();
+    OLEDC_RW_SetDigitalOutput();
     </code>
 
 */
-#define oledC_RW_SetDigitalOutput() _TRISB14 = 0
+#define OLEDC_RW_SetDigitalOutput() _TRISB14 = 0
 /**
   @Summary
     Sets the GPIO pin, RB15, high using LATB15.
@@ -1971,11 +1971,11 @@
   @Example
     <code>
     // Set RB15 high (1)
-    oledC_RST_SetHigh();
+    OLEDC_RST_SetHigh();
     </code>
 
 */
-#define oledC_RST_SetHigh()          _LATB15 = 1
+#define OLEDC_RST_SetHigh()          _LATB15 = 1
 /**
   @Summary
     Sets the GPIO pin, RB15, low using LATB15.
@@ -1995,11 +1995,11 @@
   @Example
     <code>
     // Set RB15 low (0)
-    oledC_RST_SetLow();
+    OLEDC_RST_SetLow();
     </code>
 
 */
-#define oledC_RST_SetLow()           _LATB15 = 0
+#define OLEDC_RST_SetLow()           _LATB15 = 0
 /**
   @Summary
     Toggles the GPIO pin, RB15, using LATB15.
@@ -2019,11 +2019,11 @@
   @Example
     <code>
     // Toggle RB15
-    oledC_RST_Toggle();
+    OLEDC_RST_Toggle();
     </code>
 
 */
-#define oledC_RST_Toggle()           _LATB15 ^= 1
+#define OLEDC_RST_Toggle()           _LATB15 ^= 1
 /**
   @Summary
     Reads the value of the GPIO pin, RB15.
@@ -2045,11 +2045,11 @@
     uint16_t portValue;
 
     // Read RB15
-    postValue = oledC_RST_GetValue();
+    postValue = OLEDC_RST_GetValue();
     </code>
 
 */
-#define oledC_RST_GetValue()         _RB15
+#define OLEDC_RST_GetValue()         _RB15
 /**
   @Summary
     Configures the GPIO pin, RB15, as an input.
@@ -2069,11 +2069,11 @@
   @Example
     <code>
     // Sets the RB15 as an input
-    oledC_RST_SetDigitalInput();
+    OLEDC_RST_SetDigitalInput();
     </code>
 
 */
-#define oledC_RST_SetDigitalInput()  _TRISB15 = 1
+#define OLEDC_RST_SetDigitalInput()  _TRISB15 = 1
 /**
   @Summary
     Configures the GPIO pin, RB15, as an output.
@@ -2093,11 +2093,11 @@
   @Example
     <code>
     // Sets the RB15 as an output
-    oledC_RST_SetDigitalOutput();
+    OLEDC_RST_SetDigitalOutput();
     </code>
 
 */
-#define oledC_RST_SetDigitalOutput() _TRISB15 = 0
+#define OLEDC_RST_SetDigitalOutput() _TRISB15 = 0
 /**
   @Summary
     Sets the GPIO pin, RB4, high using LATB4.
@@ -2263,11 +2263,11 @@
   @Example
     <code>
     // Set RB7 high (1)
-    oledC_EN_SetHigh();
+    OLEDC_EN_SetHigh();
     </code>
 
 */
-#define oledC_EN_SetHigh()          _LATB7 = 1
+#define OLEDC_EN_SetHigh()          _LATB7 = 1
 /**
   @Summary
     Sets the GPIO pin, RB7, low using LATB7.
@@ -2287,11 +2287,11 @@
   @Example
     <code>
     // Set RB7 low (0)
-    oledC_EN_SetLow();
+    OLEDC_EN_SetLow();
     </code>
 
 */
-#define oledC_EN_SetLow()           _LATB7 = 0
+#define OLEDC_EN_SetLow()           _LATB7 = 0
 /**
   @Summary
     Toggles the GPIO pin, RB7, using LATB7.
@@ -2311,11 +2311,11 @@
   @Example
     <code>
     // Toggle RB7
-    oledC_EN_Toggle();
+    OLEDC_EN_Toggle();
     </code>
 
 */
-#define oledC_EN_Toggle()           _LATB7 ^= 1
+#define OLEDC_EN_Toggle()           _LATB7 ^= 1
 /**
   @Summary
     Reads the value of the GPIO pin, RB7.
@@ -2337,11 +2337,11 @@
     uint16_t portValue;
 
     // Read RB7
-    postValue = oledC_EN_GetValue();
+    postValue = OLEDC_EN_GetValue();
     </code>
 
 */
-#define oledC_EN_GetValue()         _RB7
+#define OLEDC_EN_GetValue()         _RB7
 /**
   @Summary
     Configures the GPIO pin, RB7, as an input.
@@ -2361,11 +2361,11 @@
   @Example
     <code>
     // Sets the RB7 as an input
-    oledC_EN_SetDigitalInput();
+    OLEDC_EN_SetDigitalInput();
     </code>
 
 */
-#define oledC_EN_SetDigitalInput()  _TRISB7 = 1
+#define OLEDC_EN_SetDigitalInput()  _TRISB7 = 1
 /**
   @Summary
     Configures the GPIO pin, RB7, as an output.
@@ -2385,11 +2385,11 @@
   @Example
     <code>
     // Sets the RB7 as an output
-    oledC_EN_SetDigitalOutput();
+    OLEDC_EN_SetDigitalOutput();
     </code>
 
 */
-#define oledC_EN_SetDigitalOutput() _TRISB7 = 0
+#define OLEDC_EN_SetDigitalOutput() _TRISB7 = 0
 /**
   @Summary
     Sets the GPIO pin, RC0, high using LATC0.
@@ -3285,11 +3285,11 @@
   @Example
     <code>
     // Set RC6 high (1)
-    oledC_DC_SetHigh();
+    OLEDC_DC_SetHigh();
     </code>
 
 */
-#define oledC_DC_SetHigh()          _LATC6 = 1
+#define OLEDC_DC_SetHigh()          _LATC6 = 1
 /**
   @Summary
     Sets the GPIO pin, RC6, low using LATC6.
@@ -3309,11 +3309,11 @@
   @Example
     <code>
     // Set RC6 low (0)
-    oledC_DC_SetLow();
+    OLEDC_DC_SetLow();
     </code>
 
 */
-#define oledC_DC_SetLow()           _LATC6 = 0
+#define OLEDC_DC_SetLow()           _LATC6 = 0
 /**
   @Summary
     Toggles the GPIO pin, RC6, using LATC6.
@@ -3333,11 +3333,11 @@
   @Example
     <code>
     // Toggle RC6
-    oledC_DC_Toggle();
+    OLEDC_DC_Toggle();
     </code>
 
 */
-#define oledC_DC_Toggle()           _LATC6 ^= 1
+#define OLEDC_DC_Toggle()           _LATC6 ^= 1
 /**
   @Summary
     Reads the value of the GPIO pin, RC6.
@@ -3359,11 +3359,11 @@
     uint16_t portValue;
 
     // Read RC6
-    postValue = oledC_DC_GetValue();
+    postValue = OLEDC_DC_GetValue();
     </code>
 
 */
-#define oledC_DC_GetValue()         _RC6
+#define OLEDC_DC_GetValue()         _RC6
 /**
   @Summary
     Configures the GPIO pin, RC6, as an input.
@@ -3383,11 +3383,11 @@
   @Example
     <code>
     // Sets the RC6 as an input
-    oledC_DC_SetDigitalInput();
+    OLEDC_DC_SetDigitalInput();
     </code>
 
 */
-#define oledC_DC_SetDigitalInput()  _TRISC6 = 1
+#define OLEDC_DC_SetDigitalInput()  _TRISC6 = 1
 /**
   @Summary
     Configures the GPIO pin, RC6, as an output.
@@ -3407,11 +3407,11 @@
   @Example
     <code>
     // Sets the RC6 as an output
-    oledC_DC_SetDigitalOutput();
+    OLEDC_DC_SetDigitalOutput();
     </code>
 
 */
-#define oledC_DC_SetDigitalOutput() _TRISC6 = 0
+#define OLEDC_DC_SetDigitalOutput() _TRISC6 = 0
 
 /**
     Section: Function Prototypes

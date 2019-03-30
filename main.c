@@ -54,7 +54,6 @@
 #include "mcc_generated_files/cloud/cloud_service.h"
 #include "mcc_generated_files/debug_print.h"
 #include "OLEDC.h"
-#include "OLEDC_colors.h"
 #include "OLEDC_graphics.h"
 #include <time.h>
 
@@ -146,10 +145,6 @@ void sendToCloud(void)
         angle = (current_time->tm_hour+1+9)%12;
         r = 18;
         OLEDC_line(cx, cy, cx+(r*cos[angle]), cy+(r*sin[angle]), 4);
-//        char s[16];
-//        sprintf(s, "%02d", angle);
-//        puts(s);
-//        OLEDC_puts(cx, 6, s);
     }
 
    if (oled_timeout > 0) {

@@ -64,18 +64,18 @@ typedef enum OLEDC_CMDS {
 
 void sendCommand(OLEDC_COMMAND cmd, uint8_t *payload, uint8_t payload_size);
 
-void oledC_setRowAddressBounds(uint8_t min, uint8_t max);
-void oledC_setColumnAddressBounds(uint8_t min, uint8_t max);
-void oledC_setSleepMode(bool on);
+void OLEDC_setRowAddressBounds(uint8_t min, uint8_t max);
+void OLEDC_setColumnAddressBounds(uint8_t min, uint8_t max);
+void OLEDC_setSleepMode(bool on);
 
-void oledC_startReadingDisplay(void);
-void oledC_stopReadingDisplay(void);
-uint16_t oledC_readColor(void);
+void OLEDC_startReadingDisplay(void);
+void OLEDC_stopReadingDisplay(void);
+uint16_t OLEDC_readColor(void);
 
 void OLEDC_init(void);
-void oledC_sendColor(uint8_t r, uint8_t g, uint8_t b);
-void oledC_sendColorInt(uint16_t raw);
-void oledC_startWritingDisplay(void);
-void oledC_stopWritingDisplay(void);
+void OLEDC_sendColor(uint8_t r, uint8_t g, uint8_t b);
+void OLEDC_sendColorInt(uint16_t raw);
+void OLEDC_startWritingDisplay(void);
+void OLEDC_stopWritingDisplay(void);
 
 #endif

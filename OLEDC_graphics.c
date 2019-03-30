@@ -63,8 +63,13 @@ const uint8_t font[] = { // compact 5x8 font
     };
 
 uint8_t sx=1, sy=1;
-uint16_t color;
-uint16_t background_color;
+uint16_t color = OLEDC_COLOR_WHITE;
+uint16_t background_color = OLEDC_COLOR_BLACK;
+
+void OLEDC_Initialize(void)
+{
+    OLEDC_init();
+}
 
 void OLEDC_setScale(uint8_t _sx, uint8_t _sy)
 {
@@ -78,12 +83,12 @@ void OLEDC_setColor(uint16_t c)
 }
 
 void OLEDC_clearScreen(void) {
-    oledC_setColumnAddressBounds(0,96);
-    oledC_setRowAddressBounds(0,96);
+    OLEDC_setColumnAddressBounds(0,96);
+    OLEDC_setRowAddressBounds(0,96);
     uint8_t x, y;
     for( x = 0; x < 96; x++){
         for( y = 0; y < 96; y++){
-            oledC_sendColorInt(background_color);
+            OLEDC_sendColorInt(background_color);
         }
     }
 }
@@ -108,9 +113,9 @@ void OLEDC_point(uint8_t x, uint8_t y){
     if(x > OLEDC_DIM_WIDTH || y > OLEDC_DIM_HEIGHT){
         return;
     }
-    oledC_setColumnAddressBounds(95-x,95);
-    oledC_setRowAddressBounds(95-y,95);
-    oledC_sendColorInt(color);
+    OLEDC_setColumnAddressBounds(95-x,95);
+    OLEDC_setRowAddressBounds(95-y,95);
+    OLEDC_sendColorInt(color);
 }
 
 void OLEDC_thickPoint(uint8_t center_x, uint8_t center_y, uint8_t width){
@@ -245,28 +250,31 @@ void OLEDC_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t width)
 }
 
 void OLEDC_rectangle(uint8_t start_x, uint8_t start_y, uint8_t end_x, uint8_t end_y){
-    oledC_setColumnAddressBounds(95-end_x, 95 - start_x);
-    oledC_setRowAddressBounds(95-end_y, 95-start_y);
+    OLEDC_setColumnAddressBounds(95-end_x, 95 - start_x);
+    OLEDC_setRowAddressBounds(95-end_y, 95-start_y);
     uint8_t x, y;
     for( x = start_x; x < end_x+1; x++){
         for(y = start_y; y < end_y+1; y++){
-            oledC_sendColorInt(color);
+            OLEDC_sendColorInt(color);
         }
     }
 }
 
 void OLEDC_putc(uint8_t x, uint8_t y, char ch){
     const uint8_t *f = &font[(ch-' ')*OLEDC_FONT_WIDTH]; // find the char in our font...
-    uint16_t i_x, i_y;
+    uint16_t i_x, i_y, temp = color;
     for(i_x = 0; i_x < OLEDC_FONT_WIDTH * sx; i_x += sx) { // For each line of our text...
         uint8_t curr_char_byte = *f++;
         for(i_y = OLEDC_FONT_HEIGHT*sy; i_y > 0; i_y -= sy){
-            if(curr_char_byte & 0x80){
-                OLEDC_rectangle(x+i_x, y+i_y, x+i_x+sx-1, y+i_y+sy-1);
-            }
+            if(curr_char_byte & 0x80)
+                color = temp;
+            else
+                color = background_color;
+            OLEDC_rectangle(x+i_x, y+i_y, x+i_x+sx-1, y+i_y+sy-1);
             curr_char_byte <<= 1;
         }
     }
+    color = temp; // restore foreground color
 }
 
 void OLEDC_puts(uint8_t x, uint8_t y, char *string)

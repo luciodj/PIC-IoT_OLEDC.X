@@ -32,7 +32,7 @@
 #include "../spi2_driver.h"
 
 typedef enum { 
-    oledC,
+    OLEDC,
     WINC
 } spi_master_configurations_t;
 
